@@ -7,9 +7,7 @@ UI (this was completed in 24 hours) can be found on my **project partners repo**
 
 **Project was completed following this tutorial https://pythonprogramming.net/introduction-use-tensorflow-object-detection-api-tutorial/**
 
-**This repo** contains the basic object detection python script that will utilize the webcam to identify objects and label them in 
-english. This also contains the relevant TensorFlow files to run the program as well as example screenshots of the object detection 
-program.
+**This repo** contains the basic object detection python script which I wrote (through the guidance of an online tutorial) to utilize the webcam to identify objects and label them in english. This also contains the relevant TensorFlow files to run the program as well as example screenshots of the object detection program working.
 
 **to run the script**
 - *run.py* is the source code 
