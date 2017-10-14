@@ -1,0 +1,320 @@
+// I declare that this assignment is my own work and that I have correctly acknowledged the
+// work of others. I acknowledged that I have read and followed the Academic Honesty and
+// Integrity related policies as outlined in the syllabus.
+//
+// _____Joseph Dillman____ _____September 30, 2017______________
+//
+// ____ 301317623______
+//
+// (if this is group project, please list all the team members at the following space:
+//
+// _____Cyrus WaChong____ _____September 30, 2017______________
+//
+// ____301306459______
+
+#include <iostream>
+#include <string>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const string ZERO  = "11000";
+const string ONE   = "00011";
+const string TWO   = "00101";
+const string THREE = "00110";
+const string FOUR  = "01001";
+const string FIVE  = "01010";
+const string SIX   = "01100";
+const string SEVEN = "10001";
+const string EIGHT = "10010";
+const string NINE  = "10100";
+const int POSTNET_MAX_VAL = 5;
+const int BARCODE_MAX_LENGTH=27;
+// Class to contain, encode, and decode a POSTNET barcode.
+class ZipCode
+{
+    public:
+        void set(string barcode);
+        // For an input as a binary string barcode, convert to an int number
+        // and store in the private variable codeNum.
+
+        int getCodeNum();
+        // Return the private variable codeNum.
+        
+        int stringToInt(string barcode);
+        // Pre-condition: Input is a valid POSTNET string of 27 digits.
+        // Post-condition: Output is a 5 digit integer representing the barcode.
+
+        int groupToNum(string group);
+        // Pre-condition: Input is a group of 5 binary numbers.
+        // Post-condition: Output is a single digit.
+        
+        bool CheckValidity(string barcode);
+        // Pre-condition: Input is a valid POSTNET string of 27 digits.
+        // Post-condition: Output is a boolean value.
+        
+        string FromZiptoBar(int zip);
+        //Pre-condition: Input is 5 digit zip code 
+        //Post-condition: Output is 25 digit barcode
+  
+    private:
+        int codeNum[POSTNET_MAX_VAL];
+};
+
+int main()
+{
+    
+   
+    
+    string st = "110100101000101011000010011";  // an example input
+    ZipCode zip;
+    zip.CheckValidity(st);
+    zip.set(st);
+    cout<< zip.getCodeNum() <<endl;// dont know how to get this to stop printing after error
+    
+    //cout <<" please enter either a zipcode or 
+    int sr =99504; // example input
+    ZipCode far;
+    cout <<far.FromZiptoBar(sr)<< endl;
+    
+    
+    
+// ZipCode zip;                                // initialize object
+//   zip.set(st);                        // set the value to the barcode in <st>
+ //  cout << zip.getCodeNum();           // print <st> as a POSTNET integer
+    
+    
+    return 0;
+    
+}
+
+void ZipCode::set(string barcode) 
+{
+    for (int i=0; i<POSTNET_MAX_VAL; i++)
+    {
+    codeNum[i] = stringToInt(barcode);  
+    }
+}
+
+int ZipCode::getCodeNum()
+{
+    for (int i=0; i<POSTNET_MAX_VAL; i++)
+    {
+    return codeNum[i];
+    }
+}
+
+int ZipCode::stringToInt(string barcode) 
+{
+    int outputNum = 0;
+
+    // The barcode will need to be broken into 5 groups of 5 digits each.
+    // Each group of 5 digits will represent one number in the POSTNET code.
+    // Here we initialize the 5 groups and the 5 corresponding numbers.
+    string group1;
+    string group2;
+    string group3;
+    string group4;
+    string group5;
+
+    int num1 = 0;
+    int num2 = 0;
+    int num3 = 0;
+    int num4 = 0;
+    int num5 = 0;
+    
+    // First and last digits of the POSTNET barcode are removed.
+    barcode.erase(0,1);
+    barcode.erase(barcode.length()-1,1);
+
+    // Break up main barcode into 5 smaller groups of 5 numbers.
+    group1.append(barcode,0,5);
+    group2.append(barcode,5,5);
+    group3.append(barcode,10,5);
+    group4.append(barcode,15,5);
+    group5.append(barcode,20,5);
+
+    // Turn each of the groups of 5 numbers into a single number using the 
+    // groupToNum function.
+    num1 = groupToNum(group1);
+    num2 = groupToNum(group2);
+    num3 = groupToNum(group3);
+    num4 = groupToNum(group4);
+    num5 = groupToNum(group5);
+
+    // Convert the 5 final integers into one number of 5 digits 
+    // i.e. second number is in the thousands placevalue, so multiply by 1000
+    outputNum = num1*10000 + num2*1000 + num3*100 + num4*10 + num5;
+
+    return outputNum;
+}
+
+int ZipCode::groupToNum(string group)
+{
+    // Each of the 5 digits in the group will decide the final output number
+    // according to the rules of POSTNET. The groups are of type string.
+    // Ascii will be used to compare numbers of type string, 49 in ascii is 1.
+    const int ASCII_ONE = 49; 
+    const int ELEVEN = 11;
+    const int TEN =10;
+    const int TWELVE =12;
+    int num = 0;
+    int limit=0;
+   
+
+    if(group[0] == ASCII_ONE)
+    {
+        num = num + 7;
+        limit++;
+    }
+    
+    if(group[1] == ASCII_ONE)
+    {
+        num = num + 4;
+        limit++;
+    }
+
+    if(group[2] == ASCII_ONE)
+    {
+        num = num + 2;
+        limit++;
+    }
+
+    if(group[3] == ASCII_ONE)
+    {
+        num += 1;
+        limit++;
+    }
+    if(group[4] == ASCII_ONE)
+    {
+        limit++;
+        
+    }
+    
+    // a special case in POSTNET exists where "11" outputs '0'
+    if(num == ELEVEN)
+    {
+        num = 0;
+    }
+
+    return num;
+}
+
+bool ZipCode::CheckValidity(string barcode) // Checking the validity of the inputted barcode
+{
+    //This function checks the validity of the inputted barcode
+    //There can only be 2 ones in every group of 5 numbers
+    //There can only be ones and zeroes
+    //There must also be a 1 at the start and at the end
+    // If any of these conditions are not met, the barcode is invalid
+    
+    int Ones=0;
+    int blocks=0;
+    
+    
+    if (barcode.size()!=BARCODE_MAX_LENGTH)
+    {
+        cerr << "ERROR: Your inputted barcode is not 27 characters exactly\n";
+        return false;
+    }
+    
+    barcode=barcode.erase(26,1);
+    barcode=barcode.erase(0,1);
+    
+    
+    for (blocks=0; blocks<POSTNET_MAX_VAL; blocks++)
+    {
+        Ones=0;
+        
+        for(int k=0; k<POSTNET_MAX_VAL; k++)
+        {
+            if (barcode[k+blocks*5] !='1' && barcode[k+blocks*5] !='0')
+            {
+             cerr << "ERROR: There is a non binary input into the barcode\n";
+             return false;
+            }
+            if (barcode[k+blocks*5]=='1')
+            {
+                Ones++;
+            }
+        }
+        
+        if(Ones!=2)
+        {
+            cerr << "ERROR: Invalid barcode entered\n" << "Barcode does not contain valid amount of 1's\n";
+            return false;
+        }
+    }
+    
+return true;
+}
+
+string ZipCode::FromZiptoBar(int zip)
+{
+    //This function converts a zip code into a barcode
+    // groups are of type string, and each group will be transferred to a single integer value
+    // e.g: 10001 is 7 in this case, following the setup of {7,4,2,1,0} 
+    int zipCode[POSTNET_MAX_VAL]={'\0'};
+    string newvalue;
+    int number =zip;
+    string newBarCode;
+    
+    for (int i =POSTNET_MAX_VAL-1 ; i >= -1; i--) // a function found online to convert an integer into an array
+    {
+    zipCode[i] = number % 10; //inputs last number of int into the rightmost available spot of the array 
+    number /= 10; //gets rid of the last number
+    }
+    
+    for (int i=0; i<POSTNET_MAX_VAL; i++)
+    {
+        if (zipCode[i]==0)
+        {
+            newvalue=ZERO;
+        }
+        else if ( zipCode[i]==1)
+        {
+            newvalue=ONE;
+        }
+        else if ( zipCode[i]==2)
+        {
+            newvalue=TWO;
+        }
+        else if ( zipCode[i]==3)
+        {
+            newvalue=THREE;
+        }
+        else if ( zipCode[i]==4)
+        {
+            newvalue=FOUR;
+        }
+        else if ( zipCode[i]==5)
+        {
+            newvalue=FIVE;
+        }
+        else if ( zipCode[i]==6)
+        {
+            newvalue=SIX;
+        }
+        else if ( zipCode[i]==7)
+        {
+            newvalue=SEVEN;
+        }
+        else if ( zipCode[i]==8)
+        {
+            newvalue=EIGHT;
+        }
+        else if ( zipCode[i]==9)
+        {
+            newvalue=NINE;
+        }
+        else 
+        {
+         cerr << "ERROR: You have entered and invalid zipcode\n";
+         return 0;
+        }
+    newBarCode = newBarCode.append(newvalue);
+    }
+            
+newBarCode= '1'+newBarCode+'1';
+return newBarCode;
+}
